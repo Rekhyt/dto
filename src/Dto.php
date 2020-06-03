@@ -321,9 +321,7 @@ class Dto extends \ArrayObject implements DtoInterface
             if ($storageType === 'array') $output->{$k} = $v->toArray();
             if ($storageType === 'object') $output->{$k} = $v->toObject();
 
-            if (isset($output->{$k})) continue;
-
-            throw new \Exception('Unknown storage type: ' . $storageType);
+            if (!property_exists($output, $k)) throw new \Exception('Unknown storage type: ' . $storageType);
         }
 
         return $output;
@@ -382,9 +380,7 @@ class Dto extends \ArrayObject implements DtoInterface
             if ($storageType === 'array') $output[$k] = $v->toArray();
             if ($storageType === 'object') $output[$k] = $v->toObject();
 
-            if (isset($output[$k])) continue;
-
-            throw new \Exception('Unknown storage type: ' . $storageType);
+            if (!array_key_exists($k, $output)) throw new \Exception('Unknown storage type: ' . $storageType);
         }
 
         return $output;
