@@ -120,7 +120,7 @@ class Dto extends \ArrayObject implements DtoInterface
             $this->regulator->postValidate($this);
         }
     }
-    
+
     /**
      * Called by array access.
      *
@@ -133,7 +133,7 @@ class Dto extends \ArrayObject implements DtoInterface
     final public function offsetSet($index, $value)
     {
         // Integers + null only?
-        if ($this->storage_type !== 'array') {
+        if ($this->storage_type !== 'array' && $this->storage_type !== 'object') {
             throw new InvalidArrayOperationException('This operation is reserved for arrays only.');
         }
 
@@ -162,7 +162,7 @@ class Dto extends \ArrayObject implements DtoInterface
     {
         return $this->offsetExists($index);
     }
-    
+
     /**
      * @return string
      */
@@ -170,7 +170,7 @@ class Dto extends \ArrayObject implements DtoInterface
     {
         return strval($this->toScalar());
     }
-    
+
     /**
      * Append a value to the end of an array.  Defers to offsetSet to determine if location is valid for appending.
      * @link http://php.net/manual/en/arrayobject.append.php.
@@ -316,7 +316,14 @@ class Dto extends \ArrayObject implements DtoInterface
 
         $output = new \stdClass();
         foreach ($this as $k => $v) {
-            $output->{$k} = ($v->getStorageType() === 'scalar') ? $v->toScalar() : $v->toObject();
+            $storageType = $v->getStorageType();
+            if ($storageType === 'scalar') $output->{$k} = $v->toScalar();
+            if ($storageType === 'array') $output->{$k} = $v->toArray();
+            if ($storageType === 'object') $output->{$k} = $v->toObject();
+
+            if (isset($output->{$k})) continue;
+
+            throw new \Exception('Unknown storage type: ' . $storageType);
         }
 
         return $output;
@@ -370,7 +377,14 @@ class Dto extends \ArrayObject implements DtoInterface
 
         $output = [];
         foreach ($this as $k => $v) {
-            $output[$k] = ($v->getStorageType() === 'scalar') ? $v->toScalar() : $v->toArray();
+            $storageType = $v->getStorageType();
+            if ($storageType === 'scalar') $output[$k] = $v->toScalar();
+            if ($storageType === 'array') $output[$k] = $v->toArray();
+            if ($storageType === 'object') $output[$k] = $v->toObject();
+
+            if (isset($output[$k])) continue;
+
+            throw new \Exception('Unknown storage type: ' . $storageType);
         }
 
         return $output;

@@ -76,7 +76,9 @@ class JsonSchemaRegulator implements RegulatorInterface
     protected function unwrapValue($value)
     {
         if ($value instanceof DtoInterface) {
-            $value = ($value->getStorageType() === 'scalar') ? $value->toScalar() : $value->toArray();
+            $storageType = $value->getStorageType();
+            if ($storageType === 'scalar') $value = $value->toScalar();
+            if ($storageType === 'array') $value = $value->toArray();
         }
         elseif (is_object($value)) {
             $value = (array) $value;
