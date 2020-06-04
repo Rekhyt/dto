@@ -280,7 +280,7 @@ class Dto extends \ArrayObject implements DtoInterface
             $value[$k] = $this->regulator->getFilteredValueForKey($v, $k, $this->schema);
         }
 
-        parent::exchangeArray($value);
+        parent::exchangeArray((array)$value);
     }
 
     protected function hydrateArray($array)
